@@ -15,8 +15,21 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class StorageNode extends StorageModel {
 
+	/*
+	 * Field holding the location of this file
+	 */
 	String location = null;
+
+	/*
+	 * Field holding the file contents of this file, backed by a DB blob (binary
+	 * large object) so can hold quite a large amount of data.
+	 */
 	String contents = null;
+
+	/*
+	 * Field holding the content length of the contents of this file., i.e.
+	 * number of UTF-8 characters.
+	 */
 	Integer length = null;
 
 	/**

@@ -43,6 +43,20 @@ public class StorageController {
 	 * Index/list all case
 	 */
 
+	/**
+	 * 
+	 * This method handles GET calls to /store without any other path params,
+	 * and returns a collection of nodes. This is the list, or index,
+	 * controller.
+	 * 
+	 * 404 is returned if the storage DAO doesn't return an array. However no
+	 * items found is usually handled by an empty arary, which would not result
+	 * in a 404.
+	 * 
+	 * @param request
+	 * @return
+	 * @throws StorageException
+	 */
 	@RequestMapping(value = "/store", method = RequestMethod.GET)
 	public ResponseEntity<Collection<StorageNode>> getBlobs(HttpServletRequest request) throws StorageException {
 		logger.info("getBlobs");
@@ -57,6 +71,18 @@ public class StorageController {
 	 * Get either by location or by path
 	 */
 
+	/**
+	 * 
+	 * This method handles GET calls to /store/location and returns the node
+	 * with that particular location.
+	 * 
+	 * 404 is returned if there is no node found with this location.
+	 * 
+	 * @param location
+	 * @param request
+	 * @return
+	 * @throws StorageException
+	 */
 	@RequestMapping(value = "/store/{location}", method = RequestMethod.GET)
 	public ResponseEntity<StorageNode> getBlobWithLocation(@PathVariable String location, HttpServletRequest request)
 			throws StorageException {
@@ -73,9 +99,28 @@ public class StorageController {
 	 * Create either by location or by path
 	 */
 
+	/**
+	 * 
+	 * This call handles POST calls to /store/location. The call only allows
+	 * POSTing if there is no node already associated with this location. The
+	 * call is not idempotent in the sense that two repeated POSTs to the same
+	 * call results in the same outcome. If that is the wish, then instead of
+	 * returning BAD_REQUEST when a model alrady exists, simply return the model
+	 * found.
+	 * 
+	 * Returns 400 if there already is a node with this location. Returns 404 if
+	 * the DAO fails to store the node with this location (one could argue that
+	 * this is the wrong code for this case).
+	 * 
+	 * @param location
+	 * @param node
+	 * @param request
+	 * @return
+	 * @throws StorageException
+	 */
 	@RequestMapping(value = "/store/{location}", method = RequestMethod.POST)
-	public ResponseEntity<StorageNode> createBlobWithLocation(@PathVariable String location, @RequestBody StorageNode node,
-			HttpServletRequest request) throws StorageException {
+	public ResponseEntity<StorageNode> createBlobWithLocation(@PathVariable String location,
+			@RequestBody StorageNode node, HttpServletRequest request) throws StorageException {
 		logger.info("createBlobWithLocation");
 		/*
 		 * If node already exists, throw error
@@ -94,9 +139,25 @@ public class StorageController {
 	 * Update either by location or by path
 	 */
 
+	/**
+	 * 
+	 * This call handles PUT calls to /store/location. The call updates an
+	 * existing node, and requires that a node exists with the location given to
+	 * succeed.
+	 * 
+	 * Returns 404 if there is no node with this location already. Returns 404
+	 * if the DAO fails to store the node with this location (one could argue
+	 * that this is the wrong code for this case).
+	 * 
+	 * @param location
+	 * @param node
+	 * @param request
+	 * @return
+	 * @throws StorageException
+	 */
 	@RequestMapping(value = "/store/{location}", method = RequestMethod.PUT)
-	public ResponseEntity<StorageNode> updateBlobWithLocation(@PathVariable String location, @RequestBody StorageNode node,
-			HttpServletRequest request) throws StorageException {
+	public ResponseEntity<StorageNode> updateBlobWithLocation(@PathVariable String location,
+			@RequestBody StorageNode node, HttpServletRequest request) throws StorageException {
 		logger.info("updateBlobWithLocation");
 		/*
 		 * If node does not exist, throw 404
@@ -115,6 +176,19 @@ public class StorageController {
 	 * Delete either by location or by path
 	 */
 
+	/**
+	 * 
+	 * This call handles DELETE calls to /store/location. The call deletes an
+	 * existing node, and requires that a node exists with the location given to
+	 * succeed.
+	 * 
+	 * Returns 404 if there is no node with this location already.
+	 * 
+	 * @param location
+	 * @param request
+	 * @return
+	 * @throws StorageException
+	 */
 	@RequestMapping(value = "/store/{location}", method = RequestMethod.DELETE)
 	public ResponseEntity<StorageNode> deleteBlobWithLocation(@PathVariable String location, HttpServletRequest request)
 			throws StorageException {

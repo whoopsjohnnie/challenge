@@ -86,6 +86,16 @@ public class EmbeddedStorageDAO implements IStorageDAO {
 			logger.info(" -- storageUsername: " + this.storageUsername);
 		}
 
+		/*
+		 * 
+		 * Create the connection to the H2 DB. This connection is open as long
+		 * as the instance (object) is kept. When the object is deleted upon API
+		 * shutdown, the connection is closed.
+		 * 
+		 * If there is a storagePath defined, then the DB will use file backed
+		 * storage, othewise we configure an in memory SQL database.
+		 * 
+		 */
 		try {
 			JdbcDataSource ds = new JdbcDataSource();
 			if (this.storagePath == null) {
@@ -102,6 +112,10 @@ public class EmbeddedStorageDAO implements IStorageDAO {
 				this.connection = conn;
 			}
 
+			/*
+			 * Make sure we have a STORAGE_NODE table. Create with IF NOT EXISTS
+			 * so that we don't accidentally try to create the table again.
+			 */
 			Statement s = this.connection.createStatement();
 			s.execute("CREATE TABLE IF NOT EXISTS STORAGE_NODE (LOCATION VARCHAR(1024), CONTENTS BLOB)");
 
@@ -113,6 +127,13 @@ public class EmbeddedStorageDAO implements IStorageDAO {
 
 	}
 
+	/**
+	 * 
+	 * Format the path into something we can store in the DB.
+	 * 
+	 * @param path
+	 * @return
+	 */
 	protected String path(Collection<String> path) {
 		return StringUtils.arrayToDelimitedString(path.toArray(), "/");
 	}
@@ -121,6 +142,10 @@ public class EmbeddedStorageDAO implements IStorageDAO {
 	public Collection<StorageNode> getStorageNodes() throws StorageException {
 		logger.info("getStorageNodes");
 
+		/*
+		 * Error handling, make sure we have an active and working DB
+		 * connection.
+		 */
 		try {
 			if ((this.connection == null) || (this.connection.isClosed())) {
 				throw new StorageException("Embedded DB connection is closed");
@@ -178,10 +203,17 @@ public class EmbeddedStorageDAO implements IStorageDAO {
 	public StorageNode getStorageNode(Collection<String> path) throws StorageException {
 		logger.info("getStorageNode");
 
+		/*
+		 * Error handling
+		 */
 		if (path == null) {
 			throw new StorageException("Path is null");
 		}
 
+		/*
+		 * Error handling, make sure we have an active and working DB
+		 * connection.
+		 */
 		try {
 			if ((this.connection == null) || (this.connection.isClosed())) {
 				throw new StorageException("Embedded DB connection is closed");
@@ -239,12 +271,27 @@ public class EmbeddedStorageDAO implements IStorageDAO {
 	public StorageNode createStorageNode(StorageNode node, Collection<String> path) throws StorageException {
 		logger.info("createStorageNode");
 
+		/*
+		 * Error handling
+		 */
 		if (node == null) {
 			throw new StorageException("Node is null");
 		}
 
 		if (path == null) {
 			throw new StorageException("Path is null");
+		}
+
+		/*
+		 * Error handling, make sure we have an active and working DB
+		 * connection.
+		 */
+		try {
+			if ((this.connection == null) || (this.connection.isClosed())) {
+				throw new StorageException("Embedded DB connection is closed");
+			}
+		} catch (SQLException e) {
+			throw new StorageException("Embedded DB connection is closed", e);
 		}
 
 		try {
@@ -273,12 +320,27 @@ public class EmbeddedStorageDAO implements IStorageDAO {
 	public StorageNode updateStorageNode(StorageNode node, Collection<String> path) throws StorageException {
 		logger.info("updateStorageNode");
 
+		/*
+		 * Error handling
+		 */
 		if (node == null) {
 			throw new StorageException("Node is null");
 		}
 
 		if (path == null) {
 			throw new StorageException("Path is null");
+		}
+
+		/*
+		 * Error handling, make sure we have an active and working DB
+		 * connection.
+		 */
+		try {
+			if ((this.connection == null) || (this.connection.isClosed())) {
+				throw new StorageException("Embedded DB connection is closed");
+			}
+		} catch (SQLException e) {
+			throw new StorageException("Embedded DB connection is closed", e);
 		}
 
 		try {
@@ -309,12 +371,27 @@ public class EmbeddedStorageDAO implements IStorageDAO {
 	public void deleteStorageNode(Collection<String> path) throws StorageException {
 		logger.info("deleteStorageNode");
 
+		/*
+		 * Error handling
+		 */
 		if (path == null) {
 			throw new StorageException("Path is null");
 		}
 
 		if (path.size() != 1) {
 			throw new StorageException("Path is longer than one element, currently not supported");
+		}
+
+		/*
+		 * Error handling, make sure we have an active and working DB
+		 * connection.
+		 */
+		try {
+			if ((this.connection == null) || (this.connection.isClosed())) {
+				throw new StorageException("Embedded DB connection is closed");
+			}
+		} catch (SQLException e) {
+			throw new StorageException("Embedded DB connection is closed", e);
 		}
 
 		try {

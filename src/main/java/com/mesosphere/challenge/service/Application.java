@@ -20,9 +20,19 @@ import com.mesosphere.challenge.service.config.StorageServiceConfig;
 @SpringBootApplication
 public class Application {
 
+	/*
+	 * This @Autowired declaration tells Spring to automatically populate this
+	 * field with a maching bean found in the Spring config.
+	 */
 	@Autowired
 	StorageServiceConfig config;
 
+	/**
+	 * 
+	 * Main storage service entry point. Used to launch the API.
+	 * 
+	 * @param args
+	 */
 	public static void main(String[] args) {
 		SpringApplication.run(Application.class, args);
 	}
