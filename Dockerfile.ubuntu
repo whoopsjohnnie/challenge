@@ -1,0 +1,24 @@
+# Deploy challenge container
+
+# Built from https://github.com/dockerfile/java/blob/master/openjdk-8-jdk/Dockerfile
+FROM ubuntu:16.04
+
+RUN apt-get update
+RUN apt-get install -y software-properties-common
+
+# Install Java.
+RUN echo oracle-java8-installer shared/accepted-oracle-license-v1-1 select true | debconf-set-selections
+RUN add-apt-repository -y ppa:webupd8team/java
+RUN apt-get update
+RUN apt-get install -y oracle-java8-installer
+RUN rm -rf /var/lib/apt/lists/*
+RUN rm -rf /var/cache/oracle-jdk8-installer
+
+WORKDIR /data
+ENV JAVA_HOME /usr/lib/jvm/java-8-oracle
+
+# RUN adduser localuser
+RUN useradd -ms /bin/bash localuser
+ADD ./ /home/localuser/challenge
+ENV STORAGE_PATH /home/localuser
+CMD ["su", "-", "localuser", "-c", "/home/localuser/challenge/bin/challenge-executable.sh"]
