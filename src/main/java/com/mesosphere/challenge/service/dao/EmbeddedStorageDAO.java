@@ -134,7 +134,12 @@ public class EmbeddedStorageDAO implements IStorageDAO {
 	 * @param path
 	 * @return
 	 */
-	protected String path(Collection<String> path) {
+	protected String path(Collection<String> path) throws StorageException {
+		if (path == null) {
+			throw new StorageException("Path is null");
+		} else if (path.isEmpty() == true) {
+			throw new StorageException("Path is empty");
+		}
 		return StringUtils.arrayToDelimitedString(path.toArray(), "/");
 	}
 

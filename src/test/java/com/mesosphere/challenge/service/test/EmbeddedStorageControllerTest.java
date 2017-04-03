@@ -4,6 +4,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import org.junit.Before;
@@ -130,12 +131,14 @@ public class EmbeddedStorageControllerTest {
 		 * Create blob
 		 */
 		this.mockMvc.perform(post("/store/createblob").contentType(MediaType.APPLICATION_JSON).content(body))
-				.andExpect(status().isOk());
+				.andExpect(status().isOk())
+				.andExpect(content().string("{\"contents\":\"hello createblob\",\"length\":16}"));
 
 		/*
 		 * Get blob, make sure it is really there
 		 */
-		this.mockMvc.perform(get("/store/createblob")).andExpect(status().isOk());
+		this.mockMvc.perform(get("/store/createblob")).andExpect(status().isOk()).andExpect(content().string(
+				"{\"location\":\"createblob\",\"contents\":\"hello createblob\",\"length\":16,\"uri\":\"/store/createblob\"}"));
 
 		/*
 		 * Cannot create again
@@ -158,12 +161,14 @@ public class EmbeddedStorageControllerTest {
 		 * delete
 		 */
 		this.mockMvc.perform(post("/store/createblob").contentType(MediaType.APPLICATION_JSON).content(body))
-				.andExpect(status().isOk());
+				.andExpect(status().isOk())
+				.andExpect(content().string("{\"contents\":\"hello createblob\",\"length\":16}"));
 
 		/*
 		 * Get blob, make sure it is really there
 		 */
-		this.mockMvc.perform(get("/store/createblob")).andExpect(status().isOk());
+		this.mockMvc.perform(get("/store/createblob")).andExpect(status().isOk()).andExpect(content().string(
+				"{\"location\":\"createblob\",\"contents\":\"hello createblob\",\"length\":16,\"uri\":\"/store/createblob\"}"));
 
 		/*
 		 * Delete blob
@@ -234,12 +239,14 @@ public class EmbeddedStorageControllerTest {
 		 * Create blob
 		 */
 		this.mockMvc.perform(post("/store/updateblob").contentType(MediaType.APPLICATION_JSON).content(body))
-				.andExpect(status().isOk());
+				.andExpect(status().isOk())
+				.andExpect(content().string("{\"contents\":\"hello updateblob\",\"length\":16}"));
 
 		/*
 		 * Get blob, make sure it is really there
 		 */
-		this.mockMvc.perform(get("/store/updateblob")).andExpect(status().isOk());
+		this.mockMvc.perform(get("/store/updateblob")).andExpect(status().isOk()).andExpect(content().string(
+				"{\"location\":\"updateblob\",\"contents\":\"hello updateblob\",\"length\":16,\"uri\":\"/store/updateblob\"}"));
 
 		/*
 		 * 
@@ -251,12 +258,14 @@ public class EmbeddedStorageControllerTest {
 		 * Update the blob
 		 */
 		this.mockMvc.perform(put("/store/updateblob").contentType(MediaType.APPLICATION_JSON).content(body2))
-				.andExpect(status().isOk());
+				.andExpect(status().isOk())
+				.andExpect(content().string("{\"contents\":\"hello updateblob, with new contents\",\"length\":35}"));
 
 		/*
 		 * Get blob, make sure it is really there
 		 */
-		this.mockMvc.perform(get("/store/updateblob")).andExpect(status().isOk());
+		this.mockMvc.perform(get("/store/updateblob")).andExpect(status().isOk()).andExpect(content().string(
+				"{\"location\":\"updateblob\",\"contents\":\"hello updateblob, with new contents\",\"length\":35,\"uri\":\"/store/updateblob\"}"));
 
 		/*
 		 * Delete blob
